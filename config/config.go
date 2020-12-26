@@ -11,9 +11,7 @@ import (
 // Configurations exported
 type Configurations struct {
 	Server   ServerConfigurations
-	Services ServiceConfigurations
 	Database dataConfig.DatabaseConfiguration
-	Storage  dataConfig.StorageConfiguration
 }
 
 // ServerConfigurations exported
@@ -28,9 +26,10 @@ type ServiceConfigurations struct {
 
 // GetConfigs Get Configurations from config.yaml and set in Configurations struct
 func GetConfigs() (Configurations, error) {
-	viper.SetConfigName("config") // name of config file (without extension)
 	viper.SetConfigType("yaml")   // type
-	viper.AddConfigPath("config") // optionally look for config in the working directory
+	viper.SetConfigName("config") // name of config file (without extension)
+	viper.AddConfigPath("/usr/local/bin/") 
+	viper.AddConfigPath(".") // optionally look for config in the working directory
 	viper.AutomaticEnv()          // enable viper to read env
 
 	// store in configuration struct

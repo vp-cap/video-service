@@ -2,7 +2,7 @@ server:
   port: "50053"
 
 database:
-  ip: "localhost"
+  ip: "host.docker.internal"
   port: "27017"
   dbName: "cap"
   dbUser: "cap-root"
