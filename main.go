@@ -46,12 +46,12 @@ func getVideoAndAdInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	}
 	log.Println("Fetched video")
 
-	videoInference, err := db.GetVideoInference(r.Context(), ps.ByName("name"))
+	videoInference, err := db.GetVideoInference(r.Context(), video.StorageLink)
 	if err != nil {
-		fmt.Fprintf(w, "Unable to get video inference")
-		return
+		log.Println("No Video inference found", err)
+	} else {
+		log.Println("Fetched video inference")
 	}
-	log.Println("Fetched video inference")
 
 	keys := make([]string, 0, len(videoInference.TopFiveObjectsToInterval))
 	for k := range videoInference.TopFiveObjectsToInterval {
@@ -60,17 +60,15 @@ func getVideoAndAdInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 
 	ads, err := db.FindAdsWithObjects(r.Context(), keys)
 	if err != nil {
-		fmt.Fprintf(w, "Unable to get ad information")
-		return
+		log.Println("No Ads found", err)
+	} else {
+		log.Println("Fetched relevant ads")
 	}
-	log.Println("Fetched relevant ads")
-
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	
 	videoAndAdInfo, err := json.Marshal(&videoAndAdInfo{Video: video, Intervals: videoInference.TopFiveObjectsToInterval, Ads: ads})
 	if err != nil {
 		fmt.Fprintf(w, "Unable to marshal")
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	fmt.Fprintf(w, string(videoAndAdInfo))
@@ -95,8 +93,6 @@ func main() {
 	ctx, cancel = context.WithCancel(ctx)
 	defer cancel()
 
-	log.Println(configs.Database)
-	// DB and store
 	var err error
 	db, err = database.GetDatabaseClient(ctx, configs.Database)
 	if err != nil {
