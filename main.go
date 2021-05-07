@@ -98,6 +98,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	log.Println("Connected to DB")
 
 	router := httprouter.New()
 	router.GET("/videos", videoGetAll)
