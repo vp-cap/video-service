@@ -2,7 +2,9 @@ server:
   port: "50053"
 
 database:
-  address: "host.docker.internal:27017"
-  dbName: "cap"
-  dbUser: "cap-root"
-  dbPass: "cap-root"
+  dbType: mongodb
+  mongoConfig:
+    address: "host.docker.internal:27017"
+    dbName: "cap"
+    dbUser: "cap-root"
+    dbPass: "cap-root"
